@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPrint — 业务系统打印模板工具</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface-2: #222633;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f0f2f5;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-2: #06b6d4;
+      --accent-glow: rgba(59, 130, 246, 0.35);
+      --success: #10b981;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Background mesh ── */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59, 130, 246, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 90%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .nav-badge {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 48px 0 64px;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      margin-bottom: 28px;
+    }
+
+    .hero-tag::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, #60a5fa 0%, #22d3ee 50%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: clamp(16px, 2.5vw, 19px);
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-slogan {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #cbd5e1;
+      padding: 12px 28px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Flow diagram ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 48px;
+      padding: 28px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 100px;
+    }
+
+    .flow-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .flow-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .flow-arrow {
+      color: #4b5563;
+      font-size: 20px;
+      padding: 0 4px;
+    }
+
+    /* ── Section ── */
+    section {
+      margin-bottom: 56px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .section-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* ── Feature cards ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      padding: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .feature-icon.blue { background: rgba(59, 130, 246, 0.15); }
+    .feature-icon.cyan { background: rgba(6, 182, 212, 0.15); }
+    .feature-icon.purple { background: rgba(139, 92, 246, 0.15); }
+    .feature-icon.green { background: rgba(16, 185, 129, 0.15); }
+    .feature-icon.amber { background: rgba(245, 158, 11, 0.15); }
+    .feature-icon.rose { background: rgba(244, 63, 94, 0.15); }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── Compare table ── */
+    .compare-wrap {
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .compare-table thead th {
+      padding: 16px 20px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-table tbody td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .compare-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table tbody tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .pain {
+      color: #f87171;
+    }
+
+    .solution {
+      color: #6ee7b7;
+    }
+
+    /* ── Print modes ── */
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .mode-card {
+      padding: 24px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mode-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .mode-card:nth-child(1)::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .mode-card:nth-child(2)::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+    .mode-card:nth-child(3)::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+    .mode-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-family: Consolas, Monaco, monospace;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #93c5fd;
+      margin-bottom: 12px;
+    }
+
+    .mode-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .mode-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ── Scenarios ── */
+    .scenarios {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .scenario-tag {
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #d1d5db;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .scenario-tag:hover {
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #fff;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      text-align: center;
+      padding: 56px 32px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::after {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+      top: -100px;
+      right: -80px;
+      pointer-events: none;
+    }
+
+    .cta h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .cta p {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .cta-slogans {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 28px;
+      position: relative;
+    }
+
+    .cta-slogans span {
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      color: #cbd5e1;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding-top: 40px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    footer strong {
+      color: #9ca3af;
+    }
+
+    @media (max-width: 640px) {
+      .flow-arrow { display: none; }
+      .flow { gap: 16px; }
+      .compare-table thead { display: none; }
+      .compare-table tbody tr {
+        display: block;
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .compare-table tbody td {
+        display: block;
+        padding: 4px 0;
+        border: none;
+      }
+      .compare-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 2px;
+      }
+    }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .bg-mesh { display: none; }
+      .feature-card, .mode-card, .compare-wrap, .flow, .cta {
+        border: 1px solid #ddd;
+        background: #fafafa;
+        box-shadow: none;
+      }
+      .hero h1 .gradient { -webkit-text-fill-color: #2563eb; color: #2563eb; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <div class="page">
+    <nav>
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+        </div>
+        LetsPrint
+      </div>
+      <span class="nav-badge">v2.2</span>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-tag">业务系统打印解决方案</div>
+      <h1>让打印回归业务<br><span class="gradient">而不是回归开发</span></h1>
+      <p class="hero-desc">
+        LetsPrint 是面向 ERP、MES、WMS 等系统的可视化打印模板工具。
+        拖拽设计单据与标签，一条 API 即可对接，无需硬编码打印格式。
+      </p>
+      <div class="hero-slogan">打印模板，自己设计 · 系统对接，一条 API</div>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-icon">🏢</div>
+          <span class="flow-label">业务系统</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">
+          <div class="flow-icon">📡</div>
+          <span class="flow-label">API 传数据</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">
+          <div class="flow-icon">📄</div>
+          <span class="flow-label">模板渲染</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">
+          <div class="flow-icon">🖨️</div>
+          <span class="flow-label">预览 / 静默打印</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-header">
+        <h2>核心能力</h2>
+        <p>从模板设计到系统对接，一站完成</p>
+      </div>
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon blue">🎨</div>
+          <h3>可视化模板设计</h3>
+          <p>拖拽字段、配置明细表格，导入 JSON 样例自动解析字段路径，所见即所得，业务人员也能独立维护打印格式。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon cyan">🔗</div>
+          <h3>标准 API 对接</h3>
+          <p>外部系统调用 <code style="color:#93c5fd;font-size:13px">POST /api/print-jobs</code> 传入数据，返回打印预览链接，对接简单、集成成本低。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon purple">📋</div>
+          <h3>单据 & 标签打印</h3>
+          <p>支持采购单、出库单等带明细表格的单据，也支持标签批量分页打印，适配多种纸张与标签尺寸。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon green">🏷️</div>
+          <h3>条码 / 二维码</h3>
+          <p>内置条码与二维码组件，适用于仓储标签、资产标识、物流面单等场景，开箱即用。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon amber">🖨️</div>
+          <h3>多种打印方式</h3>
+          <p>浏览器预览打印、远程静默打印、先预览再远程打印，灵活适配办公室与仓库等不同场景。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon rose">📦</div>
+          <h3>开箱即用部署</h3>
+          <p>支持 Windows / Linux 单机部署，模板可导入导出，SQLite 本地存储，无需外部数据库，快速上线。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>为什么选择 LetsPrint</h2>
+        <p>告别硬编码，让打印变更不再依赖发版</p>
+      </div>
+      <div class="compare-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>传统痛点</th>
+              <th>LetsPrint 方案</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="pain" data-label="传统痛点">改打印格式要发版、排期开发</td>
+              <td class="solution" data-label="LetsPrint 方案">业务人员自行设计模板，改完即生效</td>
+            </tr>
+            <tr>
+              <td class="pain" data-label="传统痛点">每种单据都要写一套打印代码</td>
+              <td class="solution" data-label="LetsPrint 方案">导入 JSON 自动识别字段，拖拽排版</td>
+            </tr>
+            <tr>
+              <td class="pain" data-label="传统痛点">标签、单据格式不统一</td>
+              <td class="solution" data-label="LetsPrint 方案">统一模板管理，支持多种纸张规格</td>
+            </tr>
+            <tr>
+              <td class="pain" data-label="传统痛点">仓库电脑需要静默出纸</td>
+              <td class="solution" data-label="LetsPrint 方案">Agent 远程投递，指定打印机自动打印</td>
+            </tr>
+            <tr>
+              <td class="pain" data-label="传统痛点">系统对接成本高、周期长</td>
+              <td class="solution" data-label="LetsPrint 方案">标准 REST API，返回预览链接，对接简单</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>三种打印模式</h2>
+        <p>按场景选择最合适的出纸方式</p>
+      </div>
+      <div class="modes">
+        <div class="mode-card">
+          <span class="mode-tag">browser</span>
+          <h3>浏览器预览打印</h3>
+          <p>打开预览页，操作员确认后通过浏览器打印，适合办公室日常单据。</p>
+        </div>
+        <div class="mode-card">
+          <span class="mode-tag">remote</span>
+          <h3>远程静默打印</h3>
+          <p>通过 Agent 直接提交到目标电脑的打印机，无需人工干预，适合仓库流水线。</p>
+        </div>
+        <div class="mode-card">
+          <span class="mode-tag">preview-remote</span>
+          <h3>先预览再远程打印</h3>
+          <p>操作员在预览页确认无误后，一键发送到远程打印机，兼顾准确与效率。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>适用场景</h2>
+        <p>灵活适配各类业务系统的打印需求</p>
+      </div>
+      <div class="scenarios">
+        <span class="scenario-tag">ERP 采购 / 销售单据</span>
+        <span class="scenario-tag">WMS 出库标签</span>
+        <span class="scenario-tag">MES 生产工单</span>
+        <span class="scenario-tag">物流发货面单</span>
+        <span class="scenario-tag">资产条码标签</span>
+        <span class="scenario-tag">OA 审批单打印</span>
+        <span class="scenario-tag">自研后台系统</span>
+        <span class="scenario-tag">进销存报表</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="cta">
+        <h2>不写代码，也能做出专业打印</h2>
+        <p>LetsPrint — 轻量级打印中台，快速集成到您的业务系统</p>
+        <p>可视化设计 · 标准 API · 单机部署 · 模板导入导出</p>
+        <div class="cta-slogans">
+          <span>打印模板，自己设计</span>
+          <span>系统对接，一条 API</span>
+          <span>从单据到标签，一站搞定</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <strong>LetsPrint</strong> · 业务系统打印模板工具<br>
+      支持 Windows / Linux 部署 · 浏览器打印 & 远程 Agent 静默打印
+    </footer>
+  </div>
+</body>
+</html>
